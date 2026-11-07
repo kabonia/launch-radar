@@ -20,6 +20,9 @@ python3 -m venv .venv
 - `GET /api/launches?stage=&launchpad=&q=` — список лаунчей (JSON, без `raw`), сортировка по `seen_at DESC`
 - `GET /api/stats?days=30` — `[{date, count}]` по дням
 - `GET /partials/launches` — HTML-фрагмент таблицы для HTMX (та же фильтрация)
+- `GET /launches/{key}` — карточка лаунча (контракт, source, raw JSON)
+
+Таблица на `/` автообновляется раз в 30 секунд с учётом текущих фильтров.
 
 ## Структура
 

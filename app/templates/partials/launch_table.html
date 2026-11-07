@@ -18,7 +18,7 @@
     {% endif %}
     {% for l in launches %}
     <tr>
-      <td class="ticker">{{ l.ticker or "—" }}</td>
+      <td class="ticker"><a href="/launches/{{ l.key }}">{{ l.ticker or "—" }}</a></td>
       <td>{{ l.name or "—" }}</td>
       <td class="muted">{{ l.chain or "—" }}</td>
       <td class="muted">{{ l.launchpad or "—" }}</td>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ launch.ticker or launch.key }} — Launch Radar{% endblock %}
+{% block content %}
+<a class="back" href="/" hx-get="/" hx-push-url="/">← ко всем лаунчам</a>
+
+<div class="panel" style="margin-top: 12px;">
+  <h1 style="font-size: 20px; margin: 4px 0 12px;">
+    {{ launch.ticker or "—" }}
+    <span class="muted" style="font-weight: 400;">{{ launch.name or "" }}</span>
+    <span class="badge badge-{{ launch.stage or 'unknown' }}" style="margin-left: 8px;">{{ launch.stage or "—" }}</span>
+  </h1>
+  <dl class="kv">
+    <dt>key</dt><dd>{{ launch.key }}</dd>
+    <dt>contract</dt><dd>{{ launch.contract or "—" }}</dd>
+    <dt>chain</dt><dd>{{ launch.chain or "—" }}</dd>
+    <dt>launchpad</dt><dd>{{ launch.launchpad or "—" }}</dd>
+    <dt>launch date</dt><dd>{{ launch.launch_date or "—" }}</dd>
+    <dt>confidence</dt><dd>{{ ("%.0f"|format(launch.confidence * 100)) ~ "%" if launch.confidence is not none else "—" }}</dd>
+    <dt>source</dt><dd>{{ launch.source or "—" }}</dd>
+    <dt>seen at (UTC)</dt><dd>{{ (launch.seen_at or "")[:16].replace("T", " ") }}</dd>
+  </dl>
+  <h2>Raw</h2>
+  <pre class="raw">{{ launch.raw or "—" }}</pre>
+</div>
+{% endblock %}

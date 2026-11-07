@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi import HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -50,6 +51,14 @@ def index(request: Request):
         "index.html",
         {"launches": db.get_launches(), "options": options},
     )
+
+
+@app.get("/launches/{key}", response_class=HTMLResponse)
+def launch_detail(request: Request, key: str):
+    launch = db.get_launch(key)
+    if launch is None:
+        raise HTTPException(status_code=404, detail="launch not found")
+    return templates.TemplateResponse(request, "detail.html", {"launch": launch})
 
 
 @app.get("/partials/launches", response_class=HTMLResponse)

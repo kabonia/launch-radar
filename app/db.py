@@ -68,3 +68,11 @@ def get_filter_options() -> dict[str, list[str]]:
         stages = [row[0] for row in conn.execute("SELECT DISTINCT stage FROM events WHERE stage != '' ORDER BY stage")]
         launchpads = [row[0] for row in conn.execute("SELECT DISTINCT launchpad FROM events WHERE launchpad != '' ORDER BY launchpad")]
     return {"stage": stages, "launchpad": launchpads}
+
+
+def get_launch(key: str) -> dict | None:
+    with closing(_connect()) as conn:
+        row = conn.execute(
+            f"SELECT {', '.join(LAUNCH_COLUMNS)}, raw FROM events WHERE key = ?", (key,)
+        ).fetchone()
+    return dict(zip(LAUNCH_COLUMNS + ("raw",), row)) if row else None
