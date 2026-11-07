@@ -14,6 +14,24 @@ python3 -m venv .venv
 
 Открыть http://127.0.0.1:8000
 
+Переменная окружения `LAUNCHES_DB` переопределяет путь к базе (по умолчанию `./launches.db`).
+
+### Docker
+
+```bash
+docker build -t launch-radar .
+docker run --rm -p 8000:8000 -v "$PWD/launches.db:/data/launches.db:ro" -e LAUNCHES_DB=/data/launches.db launch-radar
+```
+
+### Демо-данные для графика launch_date
+
+```bash
+.venv/bin/python scripts/make_demo_db.py   # создаёт demo.db (копию со случайными launch_date)
+LAUNCHES_DB=demo.db .venv/bin/uvicorn app.main:app --reload
+```
+
+Оригинальная `launches.db` при этом не изменяется.
+
 ## API
 
 - `GET /` — дашборд: фильтры (поиск, stage, launchpad) и график за 30 дней

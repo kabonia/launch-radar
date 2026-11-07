@@ -1,9 +1,15 @@
+import os
 import sqlite3
 from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "launches.db"
+def _db_path() -> Path:
+    override = os.environ.get("LAUNCHES_DB")
+    return Path(override) if override else Path(__file__).resolve().parent.parent / "launches.db"
+
+
+DB_PATH = _db_path()
 
 LAUNCH_COLUMNS = (
     "key",
