@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<form class="filters"
+<form class="filters" onsubmit="return false"
       hx-get="/partials/launches"
       hx-target="#launch-table"
-      hx-swap="outerHTML"
-      hx-trigger="change from select, keyup changed delay:300ms from input, every 30s"
-      hx-include="[name=q], [name=stage], [name=launchpad]">
+      hx-swap="innerHTML"
+      hx-trigger="input delay:300ms, every 30s">
   <input type="search" name="q" placeholder="Поиск по ticker или названию…" autocomplete="off">
   <select name="stage" title="Stage">
     <option value="">Все stage</option>
@@ -15,7 +14,7 @@
     <option value="">Все launchpad</option>
     {% for p in options.launchpad %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
   </select>
-  <a class="csv" hx-get="/api/launches.csv" hx-target="_self" href="/api/launches.csv">⬇ CSV</a>
+  <a id="csv-link" class="csv" href="/api/launches.csv">⬇ CSV</a>
 </form>
 
 <div id="launch-table" class="panel table-wrap">
@@ -66,5 +65,12 @@
   }
   renderChart("stats-chart", "/api/stats?by=seen", "Лаунчи");
   renderChart("launch-chart", "/api/stats?by=launch", "Запланированные лаунчи");
+  const form = document.querySelector(".filters");
+  const csvLink = document.getElementById("csv-link");
+  form.addEventListener("input", () => {
+    const params = new URLSearchParams(new FormData(form));
+    const query = params.toString();
+    csvLink.href = "/api/launches.csv" + (query ? "?" + query : "");
+  });
 </script>
 {% endblock %}

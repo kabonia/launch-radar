@@ -27,7 +27,7 @@ LAUNCH_COLUMNS = (
 
 
 def _connect() -> sqlite3.Connection:
-    return sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    return sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, timeout=5)
 
 
 def get_launches(stage: str | None = None, launchpad: str | None = None, q: str | None = None) -> list[dict]:

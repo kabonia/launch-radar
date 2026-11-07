@@ -19,7 +19,7 @@
     {% endif %}
     {% for l in launches %}
     <tr>
-      <td class="ticker"><a href="/launches/{{ l.key }}">{{ l.ticker or "—" }}</a></td>
+      <td class="ticker"><a href="/launches/{{ l.key | urlencode }}">{{ l.ticker or "—" }}</a></td>
       <td>{{ l.name or "—" }}</td>
       <td>{% if l.chain %}<span class="badge">{{ l.chain }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
       <td class="muted">{{ l.launchpad or "—" }}</td>
