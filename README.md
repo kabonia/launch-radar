@@ -1,0 +1,34 @@
+# Launch Radar
+
+Веб-дашборд поверх существующей SQLite-базы `launches.db` (только чтение).
+
+Стек: Python 3.12+, FastAPI, Jinja2, HTMX, Chart.js (CDN). Без сборки фронта.
+
+## Запуск
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/uvicorn app.main:app --reload
+```
+
+Открыть http://127.0.0.1:8000
+
+## API
+
+- `GET /` — дашборд: фильтры (поиск, stage, launchpad) и график за 30 дней
+- `GET /api/launches?stage=&launchpad=&q=` — список лаунчей (JSON, без `raw`), сортировка по `seen_at DESC`
+- `GET /api/stats?days=30` — `[{date, count}]` по дням
+- `GET /partials/launches` — HTML-фрагмент таблицы для HTMX (та же фильтрация)
+
+## Структура
+
+```
+app/
+├── main.py          # роутеры
+├── db.py            # read-only SQLite (file:...?mode=ro), запросы
+└── templates/
+    ├── base.html
+    ├── index.html
+    └── partials/launch_table.html
+```

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Launch Radar{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #4f9cf9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 22px; margin: 0 0 16px; }
+    h2 { font-size: 15px; margin: 24px 0 8px; color: var(--muted); font-weight: 600; }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 16px;
+    }
+    .filters input, .filters select {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font: inherit;
+    }
+    .filters input[type="search"] { flex: 1; min-width: 180px; }
+    .filters input:focus, .filters select:focus { outline: 1px solid var(--accent); }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+    .chart-wrap { height: 220px; position: relative; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    tr:hover td { background: rgba(79, 156, 249, 0.06); }
+    .ticker { font-weight: 700; color: var(--accent); }
+    .muted { color: var(--muted); }
+    .conf { font-variant-numeric: tabular-nums; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #30363d;
+    }
+    .badge-presale { background: rgba(210, 153, 31, 0.2); color: #d2991f; }
+    .badge-graduated { background: rgba(46, 160, 67, 0.2); color: #3fb950; }
+    .empty { text-align: center; color: var(--muted); padding: 24px 0; }
+    .count { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>📡 Launch Radar</h1>
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

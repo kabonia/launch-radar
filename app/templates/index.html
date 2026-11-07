@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="filters"
+      hx-get="/partials/launches"
+      hx-target="#launch-table"
+      hx-swap="outerHTML"
+      hx-trigger="change from select, keyup changed delay:300ms from input">
+  <input type="search" name="q" placeholder="Поиск по ticker или названию…" autocomplete="off">
+  <select name="stage" title="Stage">
+    <option value="">Все stage</option>
+    {% for s in options.stage %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+  </select>
+  <select name="launchpad" title="Launchpad">
+    <option value="">Все launchpad</option>
+    {% for p in options.launchpad %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+  </select>
+</form>
+
+<div id="launch-table" class="panel table-wrap">
+  {% include "partials/launch_table.html" %}
+</div>
+
+<h2>Лаунчи по дням (30 дней)</h2>
+<div class="panel">
+  <div class="chart-wrap"><canvas id="stats-chart"></canvas></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  fetch("/api/stats")
+    .then((r) => r.json())
+    .then((data) => {
+      new Chart(document.getElementById("stats-chart"), {
+        type: "bar",
+        data: {
+          labels: data.map((d) => d.date.slice(5)),
+          datasets: [{
+            label: "Лаунчи",
+            data: data.map((d) => d.count),
+            backgroundColor: "#4f9cf9",
+            borderRadius: 3,
+          }],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 12 } },
+            y: { beginAtZero: true, ticks: { precision: 0 } },
+          },
+        },
+      });
+    });
+</script>
+{% endblock %}

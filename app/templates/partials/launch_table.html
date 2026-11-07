@@ -1,0 +1,32 @@
+<p class="count">{{ launches | length | plural("запуск", "запуска", "запусков") }}</p>
+<table>
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Название</th>
+      <th>Chain</th>
+      <th>Launchpad</th>
+      <th>Stage</th>
+      <th>Launch date</th>
+      <th>Conf</th>
+      <th>Seen at (UTC)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if not launches %}
+    <tr><td colspan="8" class="empty">Ничего не найдено</td></tr>
+    {% endif %}
+    {% for l in launches %}
+    <tr>
+      <td class="ticker">{{ l.ticker or "—" }}</td>
+      <td>{{ l.name or "—" }}</td>
+      <td class="muted">{{ l.chain or "—" }}</td>
+      <td class="muted">{{ l.launchpad or "—" }}</td>
+      <td><span class="badge badge-{{ l.stage or 'unknown' }}">{{ l.stage or "—" }}</span></td>
+      <td class="muted">{{ l.launch_date or "—" }}</td>
+      <td class="conf">{{ ("%.0f"|format(l.confidence * 100)) ~ "%" if l.confidence is not none else "—" }}</td>
+      <td class="muted">{{ (l.seen_at or "")[:16].replace("T", " ") }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
