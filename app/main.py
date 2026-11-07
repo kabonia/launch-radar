@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import csv
+import io
+
 from fastapi import FastAPI, Request
 from fastapi import HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 from app import db
@@ -39,8 +42,26 @@ def api_launches(stage: str | None = None, launchpad: str | None = None, q: str 
 
 
 @app.get("/api/stats")
-def api_stats(days: int = 30):
-    return db.get_stats_30d(days)
+def api_stats(days: int = 30, by: str = "seen"):
+    if by not in ("seen", "launch"):
+        raise HTTPException(status_code=400, detail="by must be 'seen' or 'launch'")
+    direction = "future" if by == "launch" else "past"
+    return db.get_stats_by_day(db.STATS_COLUMN_BY_MODE[by], days, direction)
+
+
+@app.get("/api/launches.csv")
+def api_launches_csv(stage: str | None = None, launchpad: str | None = None, q: str | None = None):
+    rows = db.get_launches(stage=_clean(stage), launchpad=_clean(launchpad), q=_clean(q))
+    buffer = io.StringIO()
+    buffer.write("\ufeff")
+    writer = csv.DictWriter(buffer, fieldnames=db.LAUNCH_COLUMNS)
+    writer.writeheader()
+    writer.writerows(rows)
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="launches.csv"'},
+    )
 
 
 @app.get("/")

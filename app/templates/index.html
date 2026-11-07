@@ -4,7 +4,8 @@
       hx-get="/partials/launches"
       hx-target="#launch-table"
       hx-swap="outerHTML"
-      hx-trigger="change from select, keyup changed delay:300ms from input, every 30s">
+      hx-trigger="change from select, keyup changed delay:300ms from input, every 30s"
+      hx-include="[name=q], [name=stage], [name=launchpad]">
   <input type="search" name="q" placeholder="Поиск по ticker или названию…" autocomplete="off">
   <select name="stage" title="Stage">
     <option value="">Все stage</option>
@@ -14,6 +15,7 @@
     <option value="">Все launchpad</option>
     {% for p in options.launchpad %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
   </select>
+  <a class="csv" hx-get="/api/launches.csv" hx-target="_self" href="/api/launches.csv">⬇ CSV</a>
 </form>
 
 <div id="launch-table" class="panel table-wrap">
@@ -24,18 +26,29 @@
 <div class="panel">
   <div class="chart-wrap"><canvas id="stats-chart"></canvas></div>
 </div>
+
+<h2>Запланированные лаунчи (30 дней)</h2>
+<div class="panel">
+  <div class="chart-wrap"><canvas id="launch-chart"></canvas></div>
+</div>
 {% endblock %}
 {% block scripts %}
 <script>
-  fetch("/api/stats")
-    .then((r) => r.json())
-    .then((data) => {
-      new Chart(document.getElementById("stats-chart"), {
+  function renderChart(id, endpoint, title) {
+    fetch(endpoint)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.every((d) => d.count === 0)) {
+          document.getElementById(id).parentNode.innerHTML =
+            '<div class="chart-empty">' + title + ': пока нет данных</div>';
+          return;
+        }
+        new Chart(document.getElementById(id), {
         type: "bar",
         data: {
           labels: data.map((d) => d.date.slice(5)),
           datasets: [{
-            label: "Лаунчи",
+            label: title,
             data: data.map((d) => d.count),
             backgroundColor: "#4f9cf9",
             borderRadius: 3,
@@ -49,6 +62,9 @@
           },
         },
       });
-    });
+      });
+  }
+  renderChart("stats-chart", "/api/stats?by=seen", "Лаунчи");
+  renderChart("launch-chart", "/api/stats?by=launch", "Запланированные лаунчи");
 </script>
 {% endblock %}

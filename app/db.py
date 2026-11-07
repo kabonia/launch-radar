@@ -47,18 +47,27 @@ def get_launches(stage: str | None = None, launchpad: str | None = None, q: str 
     return [dict(zip(LAUNCH_COLUMNS, row)) for row in rows]
 
 
+STATS_COLUMN_BY_MODE = {"seen": "seen_at", "launch": "launch_date"}
+
+
 def get_stats_30d(days: int = 30) -> list[dict]:
+    return get_stats_by_day("seen_at", days, "past")
+
+
+def get_stats_by_day(column: str, days: int = 30, direction: str = "past") -> list[dict]:
+    today = datetime.now(timezone.utc).date()
+    start = today if direction == "future" else today - timedelta(days=days - 1)
     with closing(_connect()) as conn:
         rows = conn.execute(
-            "SELECT date(seen_at), COUNT(*) FROM events "
-            "WHERE date(seen_at) >= date('now', ?) GROUP BY date(seen_at)",
-            (f"-{days - 1} days",),
+            f"SELECT date({column}), COUNT(*) FROM events "
+            f"WHERE {column} != '' AND date({column}) >= ? "
+            f"GROUP BY date({column})",
+            (start.isoformat(),),
         ).fetchall()
     counts = {day: count for day, count in rows}
-    today = datetime.now(timezone.utc).date()
     result: list[dict] = []
-    for offset in range(days - 1, -1, -1):
-        key = (today - timedelta(days=offset)).isoformat()
+    for offset in range(days):
+        key = (start + timedelta(days=offset)).isoformat()
         result.append({"date": key, "count": counts.get(key, 0)})
     return result
 

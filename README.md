@@ -19,6 +19,8 @@ python3 -m venv .venv
 - `GET /` — дашборд: фильтры (поиск, stage, launchpad) и график за 30 дней
 - `GET /api/launches?stage=&launchpad=&q=` — список лаунчей (JSON, без `raw`), сортировка по `seen_at DESC`
 - `GET /api/stats?days=30` — `[{date, count}]` по дням
+- `GET /api/stats?days=30&by=seen|launch` — по `seen_at` (прошедшие 30 дней) или по `launch_date` (ближайшие 30 дней)
+- `GET /api/launches.csv` — экспорт CSV с теми же фильтрами (BOM, открывается в Excel)
 - `GET /partials/launches` — HTML-фрагмент таблицы для HTMX (та же фильтрация)
 - `GET /launches/{key}` — карточка лаунча (контракт, source, raw JSON)
 

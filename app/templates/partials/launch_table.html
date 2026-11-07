@@ -8,22 +8,24 @@
       <th>Launchpad</th>
       <th>Stage</th>
       <th>Launch date</th>
+      <th>Source</th>
       <th>Conf</th>
       <th>Seen at (UTC)</th>
     </tr>
   </thead>
   <tbody>
     {% if not launches %}
-    <tr><td colspan="8" class="empty">Ничего не найдено</td></tr>
+    <tr><td colspan="9" class="empty">Ничего не найдено</td></tr>
     {% endif %}
     {% for l in launches %}
     <tr>
       <td class="ticker"><a href="/launches/{{ l.key }}">{{ l.ticker or "—" }}</a></td>
       <td>{{ l.name or "—" }}</td>
-      <td class="muted">{{ l.chain or "—" }}</td>
+      <td>{% if l.chain %}<span class="badge">{{ l.chain }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
       <td class="muted">{{ l.launchpad or "—" }}</td>
       <td><span class="badge badge-{{ l.stage or 'unknown' }}">{{ l.stage or "—" }}</span></td>
       <td class="muted">{{ l.launch_date or "—" }}</td>
+      <td>{% if l.source %}<span class="badge">{{ l.source }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
       <td class="conf">{{ ("%.0f"|format(l.confidence * 100)) ~ "%" if l.confidence is not none else "—" }}</td>
       <td class="muted">{{ (l.seen_at or "")[:16].replace("T", " ") }}</td>
     </tr>
