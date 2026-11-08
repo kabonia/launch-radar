@@ -19,6 +19,12 @@
     <dt>source</dt><dd>{{ launch.source or "—" }}</dd>
     <dt>seen at (UTC)</dt><dd>{{ (launch.seen_at or "")[:16].replace("T", " ") }}</dd>
   </dl>
+  <h2>AI-выжимка</h2>
+  <div id="summary" class="summary"
+       hx-get="/launches/{{ launch.key | urlencode }}/summary" hx-trigger="load" hx-swap="innerHTML">
+    <span class="muted">…</span>
+  </div>
+
   <h2>Raw</h2>
   <pre class="raw">{{ launch.raw or "—" }}</pre>
 </div>

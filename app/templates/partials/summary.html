@@ -1,0 +1,46 @@
+{% set key_url = launch.key | urlencode %}
+{% if error %}
+  <p class="muted">Не удалось сгенерировать: {{ error }}</p>
+  <button class="btn" hx-post="/launches/{{ key_url }}/summary" hx-target="#summary" hx-swap="innerHTML"
+          hx-indicator="#summary-ind">Повторить</button>
+  <span id="summary-ind" class="htmx-indicator muted">генерация…</span>
+{% elif not summary %}
+  <p class="muted">Выжимка ещё не создана. Модель прочитает все упоминания токена и опишет, что в них есть и чего нет.</p>
+  <button class="btn" hx-post="/launches/{{ key_url }}/summary" hx-target="#summary" hx-swap="innerHTML"
+          hx-indicator="#summary-ind">Сгенерировать</button>
+  <span id="summary-ind" class="htmx-indicator muted">генерация, 5–20 секунд…</span>
+{% else %}
+  <p class="brief">{{ summary.summary }}</p>
+
+  {% if summary.risk_flags %}
+  <p class="flags">
+    {% for f in summary.risk_flags %}<span class="badge badge-risk">{{ flag_labels.get(f, f) }}</span> {% endfor %}
+  </p>
+  {% endif %}
+
+  {% if summary.facts %}
+  <h3>Факты из источника</h3>
+  <ul>{% for x in summary.facts %}<li>{{ x }}</li>{% endfor %}</ul>
+  {% endif %}
+
+  {% if summary.claims %}
+  <h3>Заявления проекта</h3>
+  <ul>{% for c in summary.claims %}<li>{{ c.text }} <span class="muted">— «{{ c.evidence }}»</span></li>{% endfor %}</ul>
+  {% endif %}
+
+  {% if summary.not_stated %}
+  <h3>Не указано</h3>
+  <ul>{% for x in summary.not_stated %}<li>{{ x }}</li>{% endfor %}</ul>
+  {% endif %}
+
+  <p class="muted meta">
+    данных: {{ summary.data_sufficiency }} ·
+    уверенность {{ "%.0f"|format(summary.confidence * 100) }}% ·
+    {{ summary.meta.model }}{% if summary.meta.reasoning %} / reasoning {{ summary.meta.reasoning }}{% endif %} ·
+    {{ (summary.meta.created_at or "")[:16].replace("T", " ") }} UTC ·
+    {{ summary.meta.prompt_tokens or "?" }} / {{ summary.meta.completion_tokens or "?" }} токенов
+    <button class="btn btn-sm" hx-post="/launches/{{ key_url }}/summary?force=1" hx-target="#summary"
+            hx-swap="innerHTML" hx-indicator="#summary-ind">обновить</button>
+    <span id="summary-ind" class="htmx-indicator">…</span>
+  </p>
+{% endif %}
